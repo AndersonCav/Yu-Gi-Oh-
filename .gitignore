@@ -1,0 +1,5 @@
+getData.php
+.env
+*.log
+/vendor/
+.DS_Store
