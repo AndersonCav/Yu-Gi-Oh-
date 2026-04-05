@@ -23,6 +23,9 @@ final class Card
     /** @var array{amazon: string, cardmarket: string, coolstuffinc: string, ebay: string, tcgplayer: string} */
     private array $prices;
 
+    /**
+     * @param array<string, mixed> $rawData
+     */
     public function __construct(array $rawData)
     {
         $this->name = (string) ($rawData['name'] ?? '');

@@ -4,13 +4,9 @@ declare(strict_types=1);
 
 use App\Controllers\CardController;
 use App\Core\ExceptionHandler;
-use App\Core\View;
-use App\Services\YgoApiService;
 use Bramus\Router\Router;
 use Dotenv\Dotenv;
-use GuzzleHttp\Client;
-use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
+
 
 $projectRoot = dirname(__DIR__);
 $autoloadFile = $projectRoot . '/vendor/autoload.php';
@@ -28,20 +24,14 @@ if (is_file($projectRoot . '/.env')) {
 }
 
 $config = require $projectRoot . '/app/Config/config.php';
-$view = new View($projectRoot . '/views');
+
+$containerFactory = require $projectRoot . '/app/Config/dependencies.php';
+$container = $containerFactory($config, $projectRoot);
+
+$view = $container->get(App\Core\View::class);
 
 ExceptionHandler::register($view, (bool) $config['app_debug']);
-
-$logger = new Logger('app');
-$logger->pushHandler(new StreamHandler($projectRoot . '/logs/app.log', Logger::ERROR));
-
-$httpClient = new Client();
-$service = new YgoApiService(
-    $httpClient,
-    (string) $config['api_base_url'],
-    (string) $config['api_language']
-);
-$controller = new CardController($service, $view, $logger, (int) $config['results_per_page']);
+$controller = $container->get(CardController::class);
 
 $router = new Router();
 $router->setNamespace('App\\Controllers');

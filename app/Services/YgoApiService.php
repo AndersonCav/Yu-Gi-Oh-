@@ -23,6 +23,12 @@ final class YgoApiService
         $this->language = $language;
     }
 
+    /**
+     * @return array{
+     *     cards: array<int, Card>,
+     *     meta: array{total_rows:int, current_page:int, per_page:int}
+     * }
+     */
     public function searchCardsByName(string $search, int $page = 1, int $perPage = 10): array
     {
         $search = trim($search);

@@ -15,6 +15,9 @@ final class View
         $this->viewsPath = rtrim($viewsPath, DIRECTORY_SEPARATOR);
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function render(string $view, array $data = []): void
     {
         $viewFile = $this->viewsPath . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $view) . '.php';
