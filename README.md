@@ -10,14 +10,17 @@ Aplicacao web para busca de cartas Yu-Gi-Oh! com foco em engenharia de software 
 
 O projeto consome a API publica da YGOPRODeck e exibe cartas com dados completos como atributo, tipo, nivel, ATK/DEF, conjuntos e precos.
 
-Destaques tecnicos:
-- Arquitetura MVC com front controller.
-- Service dedicada para integracao HTTP com Guzzle.
-- Entidade `Card` para encapsular dados e regras de apresentacao.
-- Views enxutas, focadas em renderizacao.
-- Logging de erros com Monolog.
-- Variaveis de ambiente com Dotenv.
-- Rotas limpas (`/` e `/search`).
+## Highlights
+
+| Pilar | Implementacao | Beneficio para portfolio |
+| --- | --- | --- |
+| Arquitetura | MVC com Front Controller | Demonstra dominio de separacao de responsabilidades |
+| Integracao externa | Service Layer com Guzzle | Comunicacao HTTP resiliente e testavel |
+| Modelo de dados | Entidade `Card` com getters e regras encapsuladas | Remove arrays soltos e melhora manutencao |
+| Observabilidade | Monolog em `logs/app.log` | Facilita diagnostico em producao |
+| Configuracao | Dotenv com fallback de configuracoes | Ambientes desacoplados de codigo |
+| Roteamento | URLs limpas (`/` e `/search`) com router dedicado | UX melhor e arquitetura moderna |
+| Frontend | Bootstrap 5 + tema dark premium | Interface profissional e consistente |
 
 ## Stack
 
@@ -130,10 +133,21 @@ Padroes adotados no projeto:
 - PSR-12 (estilo)
 - Separacao de responsabilidades por camadas
 
-## Screenshots
+## Changelog
 
-- [screenshot home aqui]
-- [screenshot resultados aqui]
+### v2.0.0 - Senior Refactor
+
+- Migracao de estrutura procedural para arquitetura MVC.
+- Introducao de Service Layer para consumo da YGOPRODeck API.
+- Adocao de entidades tipadas (`Card`) no fluxo de dados.
+- Implementacao de roteamento limpo com router dedicado.
+- Adicao de logging de erros com Monolog.
+- Implementacao de tratamento amigavel de erros para o usuario final.
+- Consolidacao de assets no `public/` e tema visual premium.
+
+### v1.0.0 - Legacy Base
+
+- Primeira versao funcional com busca e exibicao de cartas via API.
 
 ## Contribuicao
 
