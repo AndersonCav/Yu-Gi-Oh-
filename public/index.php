@@ -6,6 +6,7 @@ use App\Controllers\CardController;
 use App\Core\ExceptionHandler;
 use App\Core\View;
 use App\Services\YgoApiService;
+use Bramus\Router\Router;
 use Dotenv\Dotenv;
 use GuzzleHttp\Client;
 use Monolog\Handler\StreamHandler;
@@ -42,22 +43,51 @@ $service = new YgoApiService(
 );
 $controller = new CardController($service, $view, $logger, (int) $config['results_per_page']);
 
-$route = (string) ($_GET['route'] ?? 'home');
+$router = new Router();
+$router->setNamespace('App\\Controllers');
 
-switch ($route) {
-    case 'home':
-        $controller->home();
-        break;
+$router->get('/', static function () use ($controller): void {
+    $controller->home();
+});
 
-    case 'cards/search':
-        $controller->search();
-        break;
+$router->get('/search', static function () use ($controller): void {
+    $controller->search();
+});
 
-    default:
-        http_response_code(404);
-        $view->render('errors/friendly-error', [
-            'title' => 'Página não encontrada',
-            'message' => 'A rota solicitada não existe.',
-        ]);
-        break;
+$router->set404(static function () use ($view): void {
+    http_response_code(404);
+    $view->render('errors/friendly-error', [
+        'title' => 'Página não encontrada',
+        'message' => 'A rota solicitada não existe.',
+    ]);
+});
+
+// Compatibilidade temporaria com URL legada baseada em query string
+if (isset($_GET['route'])) {
+    if ((string) $_GET['route'] === 'home') {
+        header('Location: /', true, 301);
+        exit;
+    }
+
+    if ((string) $_GET['route'] === 'cards/search') {
+        $query = [];
+
+        if (isset($_GET['busca'])) {
+            $query['busca'] = (string) $_GET['busca'];
+        }
+
+        if (isset($_GET['pagina'])) {
+            $query['pagina'] = (string) $_GET['pagina'];
+        }
+
+        $location = '/search';
+        if ($query !== []) {
+            $location .= '?' . http_build_query($query);
+        }
+
+        header('Location: ' . $location, true, 301);
+        exit;
+    }
 }
+
+$router->run();
