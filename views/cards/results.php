@@ -6,12 +6,12 @@ $searchSafe = htmlspecialchars($search ?? '', ENT_QUOTES, 'UTF-8');
         <div class="collapse navbar-collapse show">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/">
+                    <a class="nav-link active" aria-current="page" href="./">
                         <img src="assets/img/logo.png" alt="Yu-Gi-Oh! Card Explorer" class="img-fluid">
                     </a>
                 </li>
             </ul>
-            <form class="d-flex" role="search" action="/search" method="get">
+            <form class="d-flex" role="search" action="search" method="get">
                 <input type="text" name="busca" placeholder="Buscar" value="<?= $searchSafe ?>" aria-label="Buscar cartas">
                 <button class="btn btn-outline-success" type="submit">Procurar</button>
             </form>
@@ -83,10 +83,10 @@ $searchSafe = htmlspecialchars($search ?? '', ENT_QUOTES, 'UTF-8');
         <nav class="pagination-bar" aria-label="Paginação de resultados">
             <div class="pagination-actions">
                 <?php if ($page > 1): ?>
-                    <a class="btn btn-outline-success" href="/search?busca=<?= urlencode((string) ($search ?? '')) ?>&pagina=<?= $page - 1 ?>">Anterior</a>
+                    <a class="btn btn-outline-success" href="search?busca=<?= urlencode((string) ($search ?? '')) ?>&pagina=<?= $page - 1 ?>">Anterior</a>
                 <?php endif; ?>
                 <?php if ($page < $totalPages): ?>
-                    <a class="btn btn-outline-success" href="/search?busca=<?= urlencode((string) ($search ?? '')) ?>&pagina=<?= $page + 1 ?>">Próxima</a>
+                    <a class="btn btn-outline-success" href="search?busca=<?= urlencode((string) ($search ?? '')) ?>&pagina=<?= $page + 1 ?>">Próxima</a>
                 <?php endif; ?>
             </div>
         </nav>

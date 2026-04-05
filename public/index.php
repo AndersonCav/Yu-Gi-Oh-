@@ -46,6 +46,12 @@ $controller = new CardController($service, $view, $logger, (int) $config['result
 $router = new Router();
 $router->setNamespace('App\\Controllers');
 
+$scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/'));
+$basePath = rtrim($scriptDir, '/');
+if ($basePath !== '') {
+    $router->setBasePath($basePath);
+}
+
 $router->get('/', static function () use ($controller): void {
     $controller->home();
 });
@@ -64,8 +70,11 @@ $router->set404(static function () use ($view): void {
 
 // Compatibilidade temporaria com URL legada baseada em query string
 if (isset($_GET['route'])) {
+    $homePath = ($basePath !== '' ? $basePath : '') . '/';
+    $searchPath = ($basePath !== '' ? $basePath : '') . '/search';
+
     if ((string) $_GET['route'] === 'home') {
-        header('Location: /', true, 301);
+        header('Location: ' . $homePath, true, 301);
         exit;
     }
 
@@ -80,7 +89,7 @@ if (isset($_GET['route'])) {
             $query['pagina'] = (string) $_GET['pagina'];
         }
 
-        $location = '/search';
+        $location = $searchPath;
         if ($query !== []) {
             $location .= '?' . http_build_query($query);
         }
