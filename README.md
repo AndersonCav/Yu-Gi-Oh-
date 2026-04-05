@@ -160,7 +160,3 @@ Padroes adotados no projeto:
 ## Licenca
 
 Este projeto esta sob a licenca MIT.
-
-## Nota de Naming
-
-Para clareza de produto e portfolio, recomenda-se renomear o repositorio para `yugioh-card-explorer`.
