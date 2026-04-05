@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Entities\Card;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use JsonException;
@@ -31,7 +32,7 @@ final class YgoApiService
 
         if ($search === '') {
             return [
-                'data' => [],
+                'cards' => [],
                 'meta' => [
                     'total_rows' => 0,
                     'current_page' => $page,
@@ -54,11 +55,17 @@ final class YgoApiService
             ]);
 
             $payload = json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+            $rawCards = is_array($payload['data'] ?? null) ? $payload['data'] : [];
+
+            $cards = array_map(
+                static fn (array $rawCard): Card => new Card($rawCard),
+                $rawCards
+            );
 
             return [
-                'data' => $payload['data'] ?? [],
+                'cards' => $cards,
                 'meta' => [
-                    'total_rows' => (int) ($payload['meta']['total_rows'] ?? count($payload['data'] ?? [])),
+                    'total_rows' => (int) ($payload['meta']['total_rows'] ?? count($cards)),
                     'current_page' => $page,
                     'per_page' => $perPage,
                 ],

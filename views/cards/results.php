@@ -23,91 +23,49 @@ $searchSafe = htmlspecialchars($search ?? '', ENT_QUOTES, 'UTF-8');
     <div class="row row-cols-1 row-cols-md-3 g-4">
         <?php if (!empty($cards)): ?>
             <?php foreach ($cards as $card): ?>
-                <?php
-                $name = htmlspecialchars((string) ($card['name'] ?? ''), ENT_QUOTES, 'UTF-8');
-                $race = htmlspecialchars((string) ($card['race'] ?? ''), ENT_QUOTES, 'UTF-8');
-                $type = htmlspecialchars((string) ($card['type'] ?? ''), ENT_QUOTES, 'UTF-8');
-                $desc = htmlspecialchars((string) ($card['desc'] ?? ''), ENT_QUOTES, 'UTF-8');
-                $archetype = htmlspecialchars((string) ($card['archetype'] ?? ''), ENT_QUOTES, 'UTF-8');
-                $image = htmlspecialchars((string) ($card['card_images'][0]['image_url'] ?? ''), ENT_QUOTES, 'UTF-8');
-                $attribute = (string) ($card['attribute'] ?? '');
-                $level = (int) ($card['level'] ?? 0);
-                $atk = $card['atk'] ?? null;
-                $def = $card['def'] ?? null;
-                $prices = $card['card_prices'][0] ?? [];
-
-                $attributeIcons = [
-                    'DARK' => 'dark.jpg',
-                    'EARTH' => 'earth.jpg',
-                    'FIRE' => 'fire.jpg',
-                    'LIGHT' => 'light.jpg',
-                    'WATER' => 'water.jpg',
-                    'WIND' => 'wind.jpg',
-                    'DIVINE' => 'divine.jpg',
-                ];
-                $typeIcons = [
-                    'Spell Card' => 'spell.png',
-                    'Trap Card' => 'trap.png',
-                ];
-                $icon = $attributeIcons[$attribute] ?? ($typeIcons[$card['type'] ?? ''] ?? null);
-                $iconAlt = htmlspecialchars($attribute !== '' ? $attribute : (string) ($card['type'] ?? ''), ENT_QUOTES, 'UTF-8');
-                ?>
                 <div class="col">
                     <div class="card h-100">
-                        <img src="<?= $image ?>" class="card-img-top" alt="<?= $name ?>">
+                        <img src="<?= htmlspecialchars($card->getImageUrl(), ENT_QUOTES, 'UTF-8') ?>" class="card-img-top" alt="<?= htmlspecialchars($card->getName(), ENT_QUOTES, 'UTF-8') ?>">
                         <div class="card-body">
                             <h5 class="card-title">
-                                <?= $name ?>
-                                <?php if ($icon): ?>
-                                    <img src="assets/img/<?= htmlspecialchars($icon, ENT_QUOTES, 'UTF-8') ?>" class="attribute-icon" alt="<?= $iconAlt ?>">
+                                <?= htmlspecialchars($card->getName(), ENT_QUOTES, 'UTF-8') ?>
+                                <?php if ($card->getIconFilename() !== null): ?>
+                                    <img src="assets/img/<?= htmlspecialchars((string) $card->getIconFilename(), ENT_QUOTES, 'UTF-8') ?>" class="attribute-icon" alt="<?= htmlspecialchars($card->getIconLabel(), ENT_QUOTES, 'UTF-8') ?>">
                                 <?php endif; ?>
                             </h5>
                             <p class="card-text"><b>Nível</b>:
-                                <?php if ($level === 0): ?>
+                                <?php if (!$card->hasLevel()): ?>
                                     Não tem nível
                                 <?php else: ?>
-                                    <?= $level ?>
-                                    <?php for ($i = 0; $i < $level; $i++): ?>
+                                    <?= htmlspecialchars((string) $card->getLevel(), ENT_QUOTES, 'UTF-8') ?>
+                                    <?php for ($i = 0; $i < $card->getLevel(); $i++): ?>
                                         <img src="assets/img/level.png" alt="Nível da carta">
                                     <?php endfor; ?>
                                 <?php endif; ?>
                             </p>
-                            <p class="card-text"><b>Raça</b>: <?= $race ?> | <b>Tipo</b>: <?= $type ?></p>
-                            <p class="card-text"><b>Descrição</b>: <?= $desc ?></p>
+                            <p class="card-text"><b>Raça</b>: <?= htmlspecialchars($card->getRace(), ENT_QUOTES, 'UTF-8') ?> | <b>Tipo</b>: <?= htmlspecialchars($card->getType(), ENT_QUOTES, 'UTF-8') ?></p>
+                            <p class="card-text"><b>Descrição</b>: <?= htmlspecialchars($card->getDescription(), ENT_QUOTES, 'UTF-8') ?></p>
                             <p class="card-text">
-                                <?php if ($atk === null): ?>
+                                <?php if (!$card->hasAttack()): ?>
                                     <b>ATK</b>: Não tem ataque
                                 <?php else: ?>
-                                    <b>ATK</b>: <?= htmlspecialchars((string) $atk, ENT_QUOTES, 'UTF-8') ?>
+                                    <b>ATK</b>: <?= htmlspecialchars((string) $card->getAtk(), ENT_QUOTES, 'UTF-8') ?>
                                 <?php endif; ?> /
-                                <?php if ($def === null): ?>
+                                <?php if (!$card->hasDefense()): ?>
                                     <b>DEF</b>: Não tem defesa
                                 <?php else: ?>
-                                    <b>DEF</b>: <?= htmlspecialchars((string) $def, ENT_QUOTES, 'UTF-8') ?>
+                                    <b>DEF</b>: <?= htmlspecialchars((string) $card->getDef(), ENT_QUOTES, 'UTF-8') ?>
                                 <?php endif; ?>
                             </p>
-                            <p class="card-text"><b>Arquétipo</b>: <?= $archetype !== '' ? $archetype : 'Não tem arquétipo' ?></p>
-                            <p class="card-text"><b>Conjuntos de cartas</b>:
-                                <?php if (empty($card['card_sets'])): ?>
-                                    Não tem packs
-                                <?php else: ?>
-                                    <?php
-                                    $sets = [];
-                                    foreach ($card['card_sets'] as $set) {
-                                        $setName = htmlspecialchars((string) ($set['set_name'] ?? ''), ENT_QUOTES, 'UTF-8');
-                                        $setRarity = htmlspecialchars((string) ($set['set_rarity'] ?? ''), ENT_QUOTES, 'UTF-8');
-                                        $sets[] = $setName . ' (<i>' . $setRarity . '</i>)';
-                                    }
-                                    echo implode(', ', $sets);
-                                    ?>
-                                <?php endif; ?>
-                            </p>
+                            <p class="card-text"><b>Arquétipo</b>: <?= htmlspecialchars($card->getArchetypeOrDefault(), ENT_QUOTES, 'UTF-8') ?></p>
+                            <p class="card-text"><b>Conjuntos de cartas</b>: <?= htmlspecialchars($card->getSetsDisplay(), ENT_QUOTES, 'UTF-8') ?></p>
+                            <?php $prices = $card->getPrices(); ?>
                             <p class="card-text">
-                                <b>Preços</b>: <u><i>Amazon</i></u>: U$ <?= htmlspecialchars((string) ($prices['amazon_price'] ?? ''), ENT_QUOTES, 'UTF-8') ?>
-                                <u><i>Cardmarket</i></u>: € <?= htmlspecialchars((string) ($prices['cardmarket_price'] ?? ''), ENT_QUOTES, 'UTF-8') ?> |
-                                <u><i>CoolStuffInc</i></u>: U$ <?= htmlspecialchars((string) ($prices['coolstuffinc_price'] ?? ''), ENT_QUOTES, 'UTF-8') ?> |
-                                <u><i>Ebay</i></u>: U$ <?= htmlspecialchars((string) ($prices['ebay_price'] ?? ''), ENT_QUOTES, 'UTF-8') ?> |
-                                <u><i>TCGplayer</i></u>: U$ <?= htmlspecialchars((string) ($prices['tcgplayer_price'] ?? ''), ENT_QUOTES, 'UTF-8') ?>
+                                <b>Preços</b>: <u><i>Amazon</i></u>: U$ <?= htmlspecialchars($prices['amazon'], ENT_QUOTES, 'UTF-8') ?>
+                                <u><i>Cardmarket</i></u>: € <?= htmlspecialchars($prices['cardmarket'], ENT_QUOTES, 'UTF-8') ?> |
+                                <u><i>CoolStuffInc</i></u>: U$ <?= htmlspecialchars($prices['coolstuffinc'], ENT_QUOTES, 'UTF-8') ?> |
+                                <u><i>Ebay</i></u>: U$ <?= htmlspecialchars($prices['ebay'], ENT_QUOTES, 'UTF-8') ?> |
+                                <u><i>TCGplayer</i></u>: U$ <?= htmlspecialchars($prices['tcgplayer'], ENT_QUOTES, 'UTF-8') ?>
                             </p>
                         </div>
                     </div>

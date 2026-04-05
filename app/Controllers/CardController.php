@@ -6,18 +6,21 @@ namespace App\Controllers;
 
 use App\Core\View;
 use App\Services\YgoApiService;
+use Psr\Log\LoggerInterface;
 use Throwable;
 
 final class CardController
 {
     private YgoApiService $service;
     private View $view;
+    private LoggerInterface $logger;
     private int $resultsPerPage;
 
-    public function __construct(YgoApiService $service, View $view, int $resultsPerPage = 10)
+    public function __construct(YgoApiService $service, View $view, LoggerInterface $logger, int $resultsPerPage = 10)
     {
         $this->service = $service;
         $this->view = $view;
+        $this->logger = $logger;
         $this->resultsPerPage = max(1, $resultsPerPage);
     }
 
@@ -36,7 +39,7 @@ final class CardController
 
         try {
             $result = $this->service->searchCardsByName($search, $page, $this->resultsPerPage);
-            $cards = $result['data'];
+            $cards = $result['cards'];
             $meta = $result['meta'];
             $totalPages = (int) ceil(max(1, (int) $meta['total_rows']) / (int) $meta['per_page']);
 
@@ -48,6 +51,12 @@ final class CardController
                 'totalPages' => $totalPages,
             ]);
         } catch (Throwable $exception) {
+            $this->logger->error('Falha ao buscar cartas', [
+                'search' => $search,
+                'page' => $page,
+                'exception' => $exception,
+            ]);
+
             http_response_code(502);
             $this->view->render('errors/friendly-error', [
                 'title' => 'Erro ao consultar cartas',

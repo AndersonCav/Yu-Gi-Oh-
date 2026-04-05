@@ -3,3 +3,4 @@ getData.php
 *.log
 /vendor/
 .DS_Store
+logs/app.log
